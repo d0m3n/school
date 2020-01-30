@@ -1,0 +1,148 @@
+<html>
+
+<head>
+    <style type="text/css">
+        input {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+
+        .selected {
+            background-color: #4CAF50; /* Green */
+            border: 3px solid lightcoral;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="application/javascript">
+        var lastClick;
+        var letterNum = 1;
+        var letterCount = 0;
+        var lastLetterString = "";
+        var diff = 1;
+        var sumPoints = 0;
+        var letters = ["A", "B", "C", "Č", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "R", "S", "Š", "T", "U", "V", "Z", "Ž"];
+        var vowel = ["A", "E", "I", "O", "U"];
+        var cons = ["B", "C", "Č", "D", "F", "G", "H", "J", "K", "L", "M", "N", "P", "R", "S", "Š", "T", "V", "Z", "Ž"];
+        var letters2 = [vowel, cons]
+        $(document).ready(function () {
+            $("#start").click(function () {
+                if (!lastClick) {
+                    lastClick = new Date().getTime();
+                }
+                else {
+                    var newlastClick = new Date().getTime();
+                    var gain = 0;
+                    var point = Math.round((newlastClick-lastClick)/1000);  // seconds inbetween 2 nexts
+                    point = point * point * point;
+                    if (point<100) {
+                        gain = Math.round((100 - point)/10);
+                    }
+                    sumPoints = sumPoints + gain;
+                    $("#points").html(sumPoints);
+                    lastClick = newlastClick;
+                }
+
+                letterCount++;
+                $("#letterCount").html(letterCount);
+                var newStr = getRandomLetters(letterNum, diff);
+                while(newStr == lastLetterString) {
+                    newStr = getRandomLetters(letterNum, diff);
+                }
+                lastLetterString = newStr;
+                $("#job").html(newStr);
+            });
+
+            $('[name="letterNum"]').click(function () {
+                $('[name="letterNum"]').removeClass("selected");
+                $(this).addClass("selected");
+                letterNum = $(this).val();
+                resetScore();
+            });
+
+            $('[name="difficulty"]').click(function () {
+                resetScore();
+                $('[name="difficulty"]').removeClass("selected");
+                $(this).addClass("selected");
+                if ($(this).val()=="LAHKO") {
+                    diff = 1;
+                    $(this).addClass("selected");
+                }
+                else {
+                    diff = 2;
+                }
+            });
+
+            function getRandomLetters(length, diff) {
+                var ret = "";
+                if (diff == 1) {
+                    var startArr = Math.round(Math.random()*100) % 2;
+                    while (ret.length<length) {
+                        var char = getRandomLetter(letters2[startArr])
+                        if (!ret.endsWith(char)) {
+                            ret += char;
+                            startArr = (startArr+1) % 2;
+                        }
+                    }
+                }
+                else if (diff == 2) {
+                    while (ret.length<length) {
+                        var char = getRandomLetter(letters)
+                        if (!ret.endsWith(char)) {
+                            ret += char;
+                        }
+                    }
+                }
+
+                return ret;
+            }
+
+            function getRandomLetter(arr) {
+                var randIdx = Math.round(Math.random()*100) % arr.length;
+                return arr[randIdx];
+            }
+
+            function resetScore() {
+                sumPoints = 0;
+                $("#points").html("0");
+            }
+        });
+    </script>
+</head>
+<body style="font-family: Arial">
+    <div style="font-size: 20px; font-weight: bold;float: left;">Št. črk:</div>
+    <div style="float: left; margin-left: 350px; font-size: 20px; font-weight: bold;">Točke: <span id="points" style="color: red">0</span></div>
+    <div style="clear: both; float: left; margin-top: 10px;">
+        <input type="button" class="selected" value="1" name="letterNum" />
+        <input type="button" value="2" name="letterNum" />
+        <input type="button" value="3" name="letterNum" />
+        <input type="button" value="4" name="letterNum" />
+        <!--<input type="button" value="1-2" name="letterNum" />
+        <input type="button" value="1-3" name="letterNum" />
+        <input type="button" value="2-3" name="letterNum" />-->
+    </div>
+    <div style="float: left; margin-left: 110px; font-size: 20px; font-weight: bold;">Prebral: <span id="letterCount" style="color: red">0</span></div>
+    <div style="clear: both;"></div>
+    <div style="margin-top: 30px; ">
+        <input type="button" class="selected" value="LAHKO" name="difficulty" />
+        <input type="button" value="TEŽKO" name="difficulty" />
+    </div>
+    <div style="margin:30px 0 0 0; border:1px solid black; padding: 20px; font-size: 400px; " id="job">
+    </div>
+    <div style="margin-top:30px;">
+        <input type="button" style="align: center;" id="start" value="NAPREJ" />
+    </div>
+</body>
+
+</html>

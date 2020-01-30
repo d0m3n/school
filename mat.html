@@ -1,0 +1,46 @@
+<head>
+	<style>
+	table {
+	  border-collapse: collapse;
+	}
+
+	table, td, th {
+	  border: 1px solid black;
+	}
+	</style>
+	<script>
+		drawTable();
+		document.write("<br/><br/><br/><br/><br/>");
+		drawTable();
+	
+		function drawTable() {
+			document.write("<table>");
+			document.write("<tr height='35px'>");
+			document.write("<td style='width: 60px; text-align:center; font-weight:bold;'>krat</td>");
+			var nums = getNums(10);
+			nums.forEach(num => 
+				document.write("<td style='width: 60px; text-align:center; font-weight:bold;'>" + num + "</td>")
+			);
+			document.write("</tr>");
+			
+			var nums = getNums(9);
+			nums.forEach(num => 
+				document.write("<tr height='35px'><td style='text-align:center; font-weight:bold;'>" + num + "</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>")
+			);
+			document.write("</table>");
+		}
+		
+		function getNums(count) {
+			var nums = [];
+			
+			while (nums.length < count) {
+				var num = Math.floor(Math.random()*10%10);
+				if (!nums.includes(num)) {
+					nums.push(num);
+				}
+			}
+			
+			return nums;
+		}
+	</script>
+</head>

@@ -1,0 +1,354 @@
+<html>
+
+<head>
+    <style type="text/css">
+        input, button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 15px;
+        }
+
+        .selected {
+            background-color: #4CAF50; /* Green */
+            border: 3px solid lightcoral;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+
+        .results {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 50px;
+            margin-right: 30px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 100px;
+        }
+
+        .correct {
+            color: green;
+        }
+
+        .wrong {
+            color: red;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="application/javascript">
+        function Equation(equation, result, results) {
+            this.equation = equation;
+            this.result = result;
+            this.results = results;
+        }
+
+        var correctCount = 0;
+        var eqCount = 0;
+        var maxSum = 15;
+        var cyphersCount = 2;
+        var solutionPosition = "END";
+        var currentEq = getEquation(maxSum,cyphersCount,solutionPosition);
+
+        $(document).ready(function () {
+            currentEq = getEquation(maxSum,cyphersCount,solutionPosition);
+            drawEquation(currentEq);
+
+            $('[name="maxSum"]').click(function () {
+                $('[name="maxSum"]').removeClass("selected");
+                $(this).addClass("selected");
+                maxSum = Math.round($(this).val())+1;
+                resetScore();
+
+                currentEq = getEquation(maxSum,cyphersCount,solutionPosition);
+                drawEquation(currentEq);
+            });
+
+            $('[name="cyphersCount"]').click(function () {
+                $('[name="cyphersCount"]').removeClass("selected");
+                $(this).addClass("selected");
+                cyphersCount = Math.round($(this).val());
+                resetScore();
+                $("#divPositions").html("");
+                for (var i=0; i<cyphersCount; i++) {
+                    $("#divPositions").append('<input type="button" value="' + (i+1) + '" name="solutionPosition" />');
+                }
+
+                currentEq = getEquation(maxSum,cyphersCount,solutionPosition);
+                drawEquation(currentEq);
+            });
+
+            $('[name="solutionPosition"]').click(function () {
+                $('[name="solutionPosition"]').removeClass("selected");
+                $(this).addClass("selected");
+                solutionPosition = $(this).val();
+                resetScore();
+
+                currentEq = getEquation(maxSum,cyphersCount,solutionPosition);
+                drawEquation(currentEq);
+            });
+
+            $('[name="print"]').click(function () {
+                var win = window.open("", "Računi", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes");
+
+                var html = "<table style='font-size: 50px; font-family: Arial'>";
+                var eqs = new Array();  // preprecimo ponavljanje racunov
+                var i=0;
+                while (i<36) {
+                    currentEq = getEquation(maxSum,cyphersCount,solutionPosition);
+                    if ($.inArray(currentEq.equation, eqs)!=-1) {
+                        continue;
+                    }
+                    eqs.push(currentEq.equation);
+                    var splt = currentEq.equation.split(/\+|=/);
+                    eqStr = "";
+                    if (Math.round(splt[0])>=Math.round(splt[1])) {
+                        currentEq.equation = currentEq.equation.replace(/\+/g, '\-');
+                    }
+
+                    drawEquation(currentEq);
+
+                    if (i%3==0 && i!=0) {
+                        html += "</tr>";
+                    }
+                    if (i%3==0) {
+                        html += "<tr>";
+                    }
+                    html += "<td align='right'><div style='margin: 20px;'>" + $("#job").html() + "</div></td>";
+                    i++;
+                }
+                html += "</table>";
+                $(win.document.body).html(html);
+            });
+        });
+
+        function getEquation(maxSum, cyphersCount, solutionPosition) {
+            var randomMax = Math.floor(Math.random()*(maxSum))+1;
+            var sum = 0;
+            var eqStr = "";
+            for (var i=0; i<(cyphersCount-1); i++) {
+                var cy = Math.floor(Math.random()*(randomMax-sum));
+                if (randomMax!=1) {
+                    while (cy == 0 || cy == randomMax) {
+                        cy = Math.floor(Math.random()*(randomMax-sum));
+                    }
+                }
+                sum += cy;
+                if (i==0) {
+                    eqStr += cy;
+                }
+                else {
+                    eqStr += "+" + cy;
+                }
+            }
+            eqStr += "+" + (randomMax-sum);
+            sum += (randomMax-sum);
+            eqStr += "=" + sum;
+
+            var result = 0;
+            var calculatedSolutionPosition;
+            var positions = ["END"];
+            if (solutionPosition=="MIX") {
+                $('input[name="solutionPosition"]').each(function() {
+                    positions.push(Math.round($(this).val()));
+                });
+                calculatedSolutionPosition = positions[Math.floor(Math.random()*positions.length)];
+            }
+            else {
+                calculatedSolutionPosition = solutionPosition;
+            }
+
+            if (calculatedSolutionPosition=="END") {
+                result = sum;
+                var splt = eqStr.split("=");
+                eqStr = splt[0] + "=?";
+            }
+            else {
+                var pos = Math.round(calculatedSolutionPosition);
+                var splt = eqStr.split(/\+|=/);
+                eqStr = "";
+                for (var i = 0; i<cyphersCount; i++) {
+                    if (i==0) {
+                        if (i==(pos-1)) {
+                            eqStr += "?"
+                            result = Math.round(splt[i]);
+                        }
+                        else {
+                            eqStr += splt[i];
+                        }
+                    }
+                    else {
+                        if (i==(pos-1)) {
+                            eqStr += "+?"
+                            result = Math.round(splt[i]);
+                        }
+                        else {
+                            eqStr += "+" + splt[i];
+                        }
+                    }
+                }
+                eqStr += "=" + splt[splt.length-1];
+            }
+
+            // possible results
+            /*var res1 = result+1;
+            if (res1>maxSum) {
+                res1 = Math.floor(Math.random()*maxSum);
+            }
+            var res2 = result-1;
+            if (res2<0) {
+                res2 = Math.floor(Math.random()*maxSum);
+            }*/
+
+            var results = [result];
+            while (results.length<3) {
+                var res = randomIntFromInterval(result-3, result+3);
+                if (results.indexOf(res)==-1 && res>=0 && res<=maxSum) {
+                    results.push(res);
+                }
+            }
+
+            return new Equation(eqStr, result, shuffleArray(results));
+        }
+
+        function drawEquation(equation) {
+            $("#job").html(equation.equation.replace('?', '<span style="border: 3px solid black; padding: 0 50px 0 50px" id="square">&nbsp;</span>'));
+            $("#results").html("");
+            for (var i=0; i<equation.results.length; i++) {
+                $("#results").append('<input type="button" class="results" value="'+ equation.results[i] +'" name="result" />')
+            }
+
+            $('[name="result"]').click(function () {
+                $(this).addClass("selected");
+                 letterNum = $(this).val();
+                 if ($(this).val() == currentEq.result) {
+                    $("#square").html(currentEq.result + "&nbsp;&#10003;");
+                    $("#square").removeClass("wrong");
+                    $("#square").addClass("correct");
+                     correctCount++;
+                     $("#correctCount").html(correctCount);
+                 }
+                 else {
+                     $("#square").html(currentEq.result + "&nbsp;&#x2715;");
+                     $("#square").removeClass("correct");
+                     $("#square").addClass("wrong");
+                     $("#wrongs").append(currentEq.equation + "<br/>");
+                 }
+
+
+                 // tocke
+                eqCount++;
+                $("#eqCount").html(eqCount);
+
+                setTimeout(function() {
+                    nextEq = getEquation(maxSum,cyphersCount,solutionPosition);
+                    while (nextEq.equation==currentEq.equation) {
+                        nextEq = getEquation(maxSum,cyphersCount,solutionPosition);
+                    }
+                    currentEq = nextEq;
+                    drawEquation(currentEq);
+                }, 1000);
+            });
+
+            drawVisual(equation);
+        }
+
+        function drawVisual(equation) {
+            var colors = ["", "red", "blue", "green", "purple", "black", "pink"];
+            $("#visual").html("<table>");
+            if (solutionPosition=="END") {
+                var leq = equation.equation.split("=");
+                var cys = leq[0].split("+");
+                for (var i=0; i<cys.length; i++) {
+                    $("#visual").append("<tr>");
+                    var cy = Math.floor(cys[i]);
+                    var coloridx = 0;
+                    for (var j=0; j<cy; j++) {
+                        if (j%5==0) {
+                            coloridx++;
+                        }
+                        $("#visual").append("<td style='height:50px; width:50px; border: 3px solid white; background-color: " + colors[coloridx] + "'>&nbsp;</td>");
+                    }
+
+                    $("#visual").append("</tr>");
+                }
+            }
+            $("#visual").append("</table>");
+        }
+
+        function resetScore() {
+            eqCount = 0;
+            correctCount = 0;
+            $("#eqCount").html(eqCount);
+            $("#correctCount").html(correctCount);
+        }
+
+        function shuffleArray(array) {
+            for (var i = array.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+            return array;
+        }
+
+
+        function randomIntFromInterval(min,max)
+        {
+            return Math.floor(Math.random()*(max-min+1)+min);
+        }
+    </script>
+</head>
+<body style="font-family: Arial">
+<div style="font-size: 20px; font-weight: bold;float: left;">Najvišje število:</div>
+<div style="float: left; margin-left: 350px; font-size: 20px; font-weight: bold;">Rezultat: <span id="correctCount" style="color: red">0</span>/<span id="eqCount" style="color: red">0</span></div>
+<div style="clear: both; float: left; margin-top: 10px;">
+    <input type="button" value="10" name="maxSum" />
+    <input type="button" class="selected" value="15" name="maxSum" />
+    <input type="button" value="20" name="maxSum" />
+    <input type="button" value="30" name="maxSum" />
+    <input type="button" value="100" name="maxSum" />
+</div>
+<br>
+<div style="clear: both;"></div>
+<div style="margin-top: 30px; font-size: 20px; font-weight: bold;">Število števil:</div>
+<div style="margin-top: 10px; ">
+    <input type="button" class="selected" value="2" name="cyphersCount" />
+    <input type="button" value="3" name="cyphersCount" />
+</div>
+<div style="clear: both;"></div>
+<div style="margin-top: 30px; font-size: 20px; font-weight: bold;">Pozicija rešitve:</div>
+<div style="margin-top: 10px; ">
+    <button class="selected" value="END" name="solutionPosition">Za enačajem</button>
+    <button value="MIX" name="solutionPosition">Mešano</button>
+    <span id="divPositions">
+        <input type="button" value="1" name="solutionPosition" />
+        <input type="button" value="2" name="solutionPosition" />
+    </span>
+</div>
+<div style="clear: both;"></div>
+<div style="float:right;margin-top:-30px">
+    <button value="PRINT" name="print">Natisni račune</button>
+</div>
+
+<div style="margin:30px 0 0 0; border-top:1px solid black; padding: 20px; font-size: 200px;" id="job">
+
+</div>
+<div style="margin:30px 0 0 0; border-bottom:1px solid black; padding: 20px;" id="visual"></div>
+<div style="margin:30px 0 0 0; border-bottom:1px solid black; padding: 20px;" id="results"></div>
+
+<div style="margin:30px 0 0 0; border-bottom:1px solid black; padding: 20px;font-size: 20px" id="wrongs"><b>Napake<b><br></div>
+</body>
+
+</html>
