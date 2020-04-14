@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Pisno seštevanje in odštevanje</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="application/javascript">
+        var maxNumber=10000;
+        var minNumber=100;
+        var plusOnly = getUrlParameter("plusOnly");
+        var minusOnly = getUrlParameter("minusOnly");
+        var mixed = getUrlParameter("mixed");
+
+        function generateRandomCalculation() {
+            var sign = "+";
+            var first = Math.round(Math.random()*(maxNumber-minNumber) + minNumber);
+            var second = Math.round(Math.random()*(maxNumber-minNumber) + minNumber);
+            if (minusOnly) {
+                sign = "-"
+            }
+            if (mixed) {
+                sign = Math.round(Math.random()) > 0.5 ? "+" : "-"
+            }
+            if (sign == "-") {
+                if (first < second) {
+                    var tmp = first;
+                    first = second;
+                    second = tmp;
+                }
+            }
+
+            return "<div style='text-align: right;'>" +
+                        "<div>" + first + "</div>" +
+                        "<div style='border-bottom: 2px solid black'>" + sign + "&nbsp;" + second + "</div>" +
+                    "</div>";
+        }
+
+        $(document).ready(function () {
+            for (var i=0; i<7; i++) {
+                $("#main").append(
+                    "<tr>" +
+                        "<td>" + generateRandomCalculation() + "</td>" +
+                        "<td style='width: 50px;'></td>" +
+                        "<td>" + generateRandomCalculation() + "</td>" +
+                        "<td style='width: 50px;'></td>" +
+                        "<td>" + generateRandomCalculation() + "</td>" +
+                        "<td style='width: 50px;'></td>" +
+                        "<td>" + generateRandomCalculation() + "</td>" +
+                    "</tr>" +
+                    "<tr><td colspan='100%' style='height: 55px;'></td></tr>"
+                );
+            }
+
+            window.print();
+        });
+
+        function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <table id="main" style="font-family: Arial; font-size: 35px; letter-spacing: 4px;">
+    </table>
+</body>
+</html>
