@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Pisno množenje in deljenje</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="application/javascript">
+        var maxLeftNumber=10000;
+        var minLeftNumber=100;
+        var maxRightNumber=100;
+        var minRightNumber=2;
+        var multiplicationOnly = getUrlParameter("multiplicationOnly");
+        var divisionOnly = getUrlParameter("divisionOnly");
+        var mixed = getUrlParameter("mixed");
+
+        function generateRandomCalculation() {
+            var sign = "&bull;";
+            var first = Math.round(Math.random()*(maxLeftNumber-minLeftNumber) + minLeftNumber);
+            var second = Math.round(Math.random()*(maxRightNumber-minRightNumber) + minRightNumber);
+            if (divisionOnly) {
+                sign = ":"
+            }
+            if (mixed) {
+                sign = Math.round(Math.random()) > 0.5 ? "&bull;" : ":"
+            }
+
+            return "<div style='text-align: left;'>" +
+                        "<div style='border-bottom: 2px solid black'>" + first + "&nbsp;" + sign + "&nbsp;" + second + "&nbsp;=&nbsp;</div>" +
+                    "</div>";
+        }
+
+        $(document).ready(function () {
+            for (var i=0; i<6; i++) {
+                $("#main").append(
+                    "<tr>" +
+                        "<td>" + generateRandomCalculation() + "</td>" +
+                        "<td style='width: 50px;'></td>" +
+                        "<td>" + generateRandomCalculation() + "</td>" +
+                    "</tr>" +
+                    "<tr><td colspan='100%' style='height: 150px;'></td></tr>"
+                );
+            }
+
+            window.print();
+        });
+
+        function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <table id="main" style="font-family: Arial; font-size: 35px; letter-spacing: 4px; width: 100%">
+    </table>
+</body>
+</html>
