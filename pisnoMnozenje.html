@@ -8,7 +8,13 @@
         var maxLeftNumber=10000;
         var minLeftNumber=100;
         var maxRightNumber=10;
+        if (getUrlParameter("maxRightNumber")) {
+            maxRightNumber = getUrlParameter("maxRightNumber")
+        }
         var minRightNumber=2;
+        if (getUrlParameter("minRightNumber")) {
+            minRightNumber = getUrlParameter("minRightNumber")
+        }
         var multiplicationOnly = getUrlParameter("multiplicationOnly");
         var divisionOnly = getUrlParameter("divisionOnly");
         var mixed = getUrlParameter("mixed");
@@ -17,6 +23,9 @@
             var sign = "&bull;";
             var first = Math.round(Math.random()*(maxLeftNumber-minLeftNumber) + minLeftNumber);
             var second = Math.round(Math.random()*(maxRightNumber-minRightNumber) + minRightNumber);
+            while (second < minRightNumber) {
+                second = Math.round(Math.random()*(maxRightNumber-minRightNumber) + minRightNumber);
+            }
             if (divisionOnly) {
                 sign = ":"
             }
@@ -30,7 +39,7 @@
         }
 
         $(document).ready(function () {
-            for (var i=0; i<6; i++) {
+            for (var i=0; i<5; i++) {
                 $("#main").append(
                     "<tr>" +
                         "<td>" + generateRandomCalculation() + "</td>" +
@@ -41,7 +50,7 @@
                 );
             }
 
-            window.print();
+            //window.print();
         });
 
         function getUrlParameter(sParam) {
