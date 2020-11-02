@@ -50,11 +50,18 @@
                 var html = "<table style='font-size: 50px; font-family: Arial'>";
                 var eqs = new Array();  // preprecimo ponavljanje racunov
                 var i=0;
+                var existingIterations = 0;
                 while (i<36) {
+                    debugger;
                     currentEq = getEquation($("#factors").val().split(","));
                     if ($.inArray(currentEq.equation, eqs)!=-1) {
+                        existingIterations++;
+                        if (existingIterations==100) {
+                            break;
+                        }
                         continue;
                     }
+                    existingIterations = 0;
                     eqs.push(currentEq.equation);
 
                     drawEquation(currentEq);
@@ -77,8 +84,8 @@
             var eqStr = "";
             var i=0;
             while (i < 2) {
-                var cy = Math.floor(Math.random()*10);
-                debugger;
+                var cy = Math.floor(Math.random()*10)+1;
+                //debugger;
                 if (!factors.includes(cy+"")) {
                     continue;
                 }
