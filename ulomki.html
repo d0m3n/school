@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ulomki</title>
+  <style>
+    span.frac {
+      display: inline-block;
+      text-align: center;
+      vertical-align: middle;
+    }
+    span.frac > sup, span.frac > sub {
+      display: block;
+      font: inherit;
+      padding: 0 0.3em;
+    }
+    span.frac > sup {border-bottom: 0.08em solid;}
+    span.frac > span {display: none;}
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script>
+    const ops = ["+", "&#8211;", ":", "&bull;"];
+    numberOfFractionsParam = getUrlParameter("numberOfFractions");
+    numberOfFractions = 2;
+    if (numberOfFractionsParam !== undefined) {
+      numberOfFractions = numberOfFractionsParam;
+    }
+
+    for (var i=0; i<12; i++) {
+      document.write("<br/>");
+      drawExpression(numberOfFractions);
+    }
+    // window.print();
+
+    function drawExpression(numberOfFractions) {
+      document.write("<p>");
+      for (var i=0; i<numberOfFractions; i++) {
+        drawFraction();
+        if (i !== (numberOfFractions-1)) {
+          document.write("&nbsp;&nbsp;" + ops[getRandom(0,3)] + "&nbsp;&nbsp;");
+        }
+      }
+      document.write("=</p>");
+    }
+
+    function drawFraction() {
+      whole = getNums(1).reduce((a, b) => a * b);
+      factor1 = getNums(2).reduce((a, b) => a * b);
+      factor2 = getNums(2).reduce((a, b) => a * b);
+      document.write(`
+            `+whole+`&nbsp;
+            <span class="frac">
+              <sup>`+factor1+`</sup>
+              <sub>`+factor2+`</sub>
+            </span>
+      `);
+    }
+
+    function getNums(count) {
+      var nums = [];
+
+      while (nums.length < count) {
+        var num = Math.floor(Math.random()*10%10);
+        if (num === 0) {
+          num += 1;
+        }
+        if (!nums.includes(num)) {
+          nums.push(num);
+        }
+      }
+
+      return nums;
+    }
+
+    function getRandom(from, to) {
+      while (true) {
+        r = Math.floor(Math.random()*10%10);
+        if (r>=from && r<=to) return r;
+      }
+    }
+
+    function getUrlParameter(sParam) {
+      var sPageURL = window.location.search.substring(1),
+              sURLVariables = sPageURL.split('&'),
+              sParameterName,
+              i;
+
+      for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+          return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+
+</body>
+</html>
