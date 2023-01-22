@@ -45,11 +45,11 @@
 
     function drawFraction() {
       whole = getNums(1).reduce((a, b) => a * b);
-      factor1 = getNums(2).reduce((a, b) => a * b);
+      factor1 = getNums(1).reduce((a, b) => a * b);
       while (factor1 > 20) {
           factor1 = getNums(2).reduce((a, b) => a * b);
       }
-      factor2 = getNums(2).reduce((a, b) => a * b);
+      factor2 = getNums(1).reduce((a, b) => a * b);
       while (factor2 > 20) {
           factor2 = getNums(2).reduce((a, b) => a * b);
       }
