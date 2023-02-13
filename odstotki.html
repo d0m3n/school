@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Odstotki</title>
+  <style>
+    span.frac {
+      display: inline-block;
+      text-align: center;
+      vertical-align: middle;
+    }
+    span.frac > sup, span.frac > sub {
+      display: block;
+      font: inherit;
+      padding: 0 0.3em;
+    }
+    span.frac > sup {border-bottom: 0.08em solid;}
+    span.frac > span {display: none;}
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script>
+    const ops = ["%", ""];
+
+    for (var i=0; i<15; i++) {
+      document.write("<br/>");
+      drawExpression();
+    }
+    // window.print();
+
+    function drawExpression() {
+      document.write("<p>");
+
+      first = getRandom(2,50);
+      op = ops[getRandom(0,1)]
+      second = getRandom(20,500)
+      document.write(`
+            `+first+op+`&nbsp;od&nbsp;`+second+`
+      `);
+      document.write("=</p>");
+    }
+
+    function getNums(count) {
+      var nums = [];
+
+      while (nums.length < count) {
+        var num = Math.floor(Math.random()*10%10);
+        if (num === 0) {
+          num += 1;
+        }
+        if (!nums.includes(num)) {
+          nums.push(num);
+        }
+      }
+
+      return nums;
+    }
+
+    function getRandom(from, to) {
+      while (true) {
+        r = Math.floor(Math.random()*1000%1000);
+        if (r>=from && r<=to) return r;
+      }
+    }
+
+    function getUrlParameter(sParam) {
+      var sPageURL = window.location.search.substring(1),
+              sURLVariables = sPageURL.split('&'),
+              sParameterName,
+              i;
+
+      for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+          return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+
+</body>
+</html>
