@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Potence ulomkov</title>
+    <style>
+        span.frac {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+        }
+        span.frac > sup, span.frac > sub {
+            display: block;
+            font: inherit;
+            padding: 0 0.3em;
+        }
+        span.bracket {
+            font-size: 2.3em;
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+        }
+        sup.power {
+            font-size: 1.2em;
+        }
+        span.frac > sup {border-bottom: 0.08em solid;}
+        span.frac > span {display: none;}
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+        const ops = ["+", "—", ":", "&bull;"];
+        numberOfFractionsParam = getUrlParameter("numberOfFractions");
+        numberOfFractions = 2;
+        if (numberOfFractionsParam !== undefined) {
+            numberOfFractions = numberOfFractionsParam;
+        }
+
+        for (let i=0; i<10; i++) {
+            document.write("<br/><br/><br/>");
+            drawExpression(numberOfFractions);
+        }
+        // window.print();
+
+        function drawExpression(numberOfFractions) {
+            document.write("<p>");
+            for (let i=0; i<numberOfFractions; i++) {
+                drawFraction();
+                if (i !== (numberOfFractions-1)) {
+                    document.write("&nbsp;&nbsp;" + ops[getRandom(0,3)] + "&nbsp;&nbsp;");
+                }
+            }
+            document.write("=</p>");
+        }
+
+        function drawFraction() {
+            let power = getNums(1).reduce((a, b) => a * b);
+            let factor1 = getNums(1).reduce((a, b) => a * b);
+            while (factor1 > 20) {
+                factor1 = getNums(2).reduce((a, b) => a * b);
+            }
+            let factor2 = getNums(1).reduce((a, b) => a * b);
+            while (factor2 > 20) {
+                factor2 = getNums(2).reduce((a, b) => a * b);
+            }
+
+            const outsideSign = getRandomSign();
+            document.write(`
+                `+((outsideSign.length>0)? '<span class="bracket">(</span>'+outsideSign : '')+`
+                <span class="bracket">(</span>
+                `+getRandomSign()+`
+                <span class="frac">
+                  <sup>`+factor1+`</sup>
+                  <sub>`+factor2+`</sub>
+                </span>
+                <span class="bracket">)</span>
+                <sup class="power">`+power+`&nbsp;</sup>
+                `+((outsideSign.length>0)? '<span class="bracket">)</span>' : '')+`
+            `);
+        }
+
+        function getNums(count) {
+            let nums = [];
+
+            while (nums.length < count) {
+                let num = Math.floor(Math.random()*10%10);
+                if (num === 0) {
+                    num += 1;
+                }
+                if (!nums.includes(num)) {
+                    nums.push(num);
+                }
+            }
+
+            return nums;
+        }
+
+        function getRandom(from, to) {
+            while (true) {
+                let r = Math.floor(Math.random()*10%10);
+                if (r>=from && r<=to) return r;
+            }
+        }
+
+        function getRandomSign() {
+            return Math.floor(Math.random()*10%2) === 0 ? "" : "—";
+        }
+
+        function getUrlParameter(sParam) {
+            let sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+
+</body>
+</html>
