@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pretvajanje enot</title>
+    <style>
+        span.frac {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+        }
+        span.frac > sup, span.frac > sub {
+            display: block;
+            font: inherit;
+            padding: 0 0.3em;
+        }
+        span.bracket {
+            font-size: 2.3em;
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+        }
+        sup.power {
+            font-size: 1.2em;
+        }
+        span.frac > sup {border-bottom: 0.08em solid;}
+        span.frac > span {display: none;}
+        p {
+            font-size: 1.5em;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+        const units = {
+            "l": [
+                { "unit": "ml", "factor": 1000 },
+                { "unit": "cl", "factor": 100 },
+                { "unit": "dl", "factor": 10 },
+                { "unit": "l", "factor": 1 },
+                { "unit": "hl", "factor": 10e-2 }
+            ],
+            "m": [
+                { "unit": "nm", "factor": 10e9 },
+                { "unit": "um", "factor": 10e6 },
+                { "unit": "mm", "factor": 1000 },
+                { "unit": "cm", "factor": 100 },
+                { "unit": "dm", "factor": 10 },
+                { "unit": "m", "factor": 1 },
+                { "unit": "km", "factor": 10e-3 }
+            ],
+            "m^2": [
+                { "unit": "mm<sup>2</sup>", "factor": 10e-3 },
+                { "unit": "cm<sup>2</sup>", "factor": 10e-2 },
+                { "unit": "dm<sup>2</sup>", "factor": 100 },
+                { "unit": "m<sup>2</sup>", "factor": 1 },
+                { "unit": "km<sup>2</sup>", "factor": 10e-6 }
+            ],
+            "g": [
+                { "unit": "g", "factor": 1 },
+                { "unit": "dg", "factor": 10e-1 },
+                { "unit": "kg", "factor": 10e-3 },
+            ],
+            "m/s": [
+                { "unit": "m/s", "factor": 1 },
+                { "unit": "m/min", "factor": 60 },
+                { "unit": "m/h", "factor": 3600 },
+                { "unit": "km/s", "factor": 10e-3 },
+                { "unit": "km/min", "factor": 0.06 },
+                { "unit": "km/h", "factor": 3.6 },
+            ],
+            "s": [
+                { "unit": "s", "factor": 1 },
+                { "unit": "min", "factor": 60 },
+                { "unit": "h", "factor": 3600 },
+            ],
+        };
+
+        for (let i=0; i<11; i++) {
+            const value = getRandom(1,100)
+            let randUnitCategory = Object.keys(units)[Math.floor(Math.random()*10%Object.keys(units).length)];
+            let randUnitFrom = Math.floor(Math.random()*10%units[randUnitCategory].length);
+            let randUnitTo = Math.floor(Math.random()*10%units[randUnitCategory].length);
+            while (randUnitFrom === randUnitTo) {
+                randUnitTo = Math.floor(Math.random()*10%units[randUnitCategory].length);
+            }
+            document.write("<p>" + value + " " + units[randUnitCategory][randUnitFrom].unit + " = _______________________ " + units[randUnitCategory][randUnitTo].unit + "</p>");
+            document.write("<br/>");
+        }
+        //window.print();
+
+        function drawExpression(numberOfFractions) {
+            document.write("<p>");
+            for (let i=0; i<numberOfFractions; i++) {
+                drawFraction();
+                if (i !== (numberOfFractions-1)) {
+                    document.write("&nbsp;&nbsp;" + ops[getRandom(0,3)] + "&nbsp;&nbsp;");
+                }
+            }
+            document.write("=</p>");
+        }
+
+        function drawFraction() {
+            let power = getNums(1).reduce((a, b) => a * b);
+            let factor1 = getNums(1).reduce((a, b) => a * b);
+            while (factor1 > 20) {
+                factor1 = getNums(2).reduce((a, b) => a * b);
+            }
+            let factor2 = getNums(1).reduce((a, b) => a * b);
+            while (factor2 > 20) {
+                factor2 = getNums(2).reduce((a, b) => a * b);
+            }
+
+            const outsideSign = getRandomSign();
+            document.write(`
+                `+((outsideSign.length>0)? '<span class="bracket">(</span>'+outsideSign : '')+`
+                <span class="bracket">(</span>
+                `+getRandomSign()+`
+                <span class="frac">
+                  <sup>`+factor1+`</sup>
+                  <sub>`+factor2+`</sub>
+                </span>
+                <span class="bracket">)</span>
+                <sup class="power">`+power+`&nbsp;</sup>
+                `+((outsideSign.length>0)? '<span class="bracket">)</span>' : '')+`
+            `);
+        }
+
+        function getNums(count) {
+            let nums = [];
+
+            while (nums.length < count) {
+                let num = Math.floor(Math.random()*10%10);
+                if (num === 0) {
+                    num += 1;
+                }
+                if (!nums.includes(num)) {
+                    nums.push(num);
+                }
+            }
+
+            return nums;
+        }
+
+        function getRandom(from, to) {
+            while (true) {
+                let r = Math.floor(Math.random()*to%to);
+                if (r>=from && r<=to) return r;
+            }
+        }
+
+        function getRandomSign() {
+            return Math.floor(Math.random()*10%2) === 0 ? "" : "—";
+        }
+
+        function getUrlParameter(sParam) {
+            let sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+
+</body>
+</html>
